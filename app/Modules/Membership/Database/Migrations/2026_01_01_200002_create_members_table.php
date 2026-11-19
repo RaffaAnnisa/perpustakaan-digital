@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('members', function (Blueprint $table) {
+            $table->id();
+            // One-to-Many: MembershipType -> Member (satu modul)
+            $table->foreignId('membership_type_id')->constrained('membership_types')->restrictOnDelete();
+            $table->string('member_code')->unique();
+            $table->string('name');
+            $table->string('email')->nullable();
+            $table->string('status')->default('active'); // active | inactive
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('members');
+    }
+};
