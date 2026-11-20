@@ -4,8 +4,21 @@
 @section('content')
 <div class="page-head">
     <div><h1>Peminjaman</h1><p>Catatan sirkulasi, jatuh tempo, dan denda.</p></div>
-    <a class="btn" href="{{ route('loans.create') }}">+ Pinjamkan buku</a>
+    <div class="row">
+        <a class="btn ghost" href="{{ route('fines.index') }}">Riwayat denda</a>
+        <a class="btn" href="{{ route('loans.create') }}">+ Pinjamkan buku</a>
+    </div>
 </div>
+
+@if ($counts['overdue'] > 0)
+    <div class="alert error">
+        <strong>{{ $counts['overdue'] }} peminjaman terlambat.</strong>
+        Denda berjalan saat ini Rp {{ number_format($overdueTotal, 0, ',', '.') }}.
+        @if ($filter !== 'overdue')
+            <a href="{{ route('loans.index', ['status' => 'overdue']) }}">Tampilkan yang terlambat</a>
+        @endif
+    </div>
+@endif
 
 <div class="tabs">
     @foreach (['all' => 'Semua', 'borrowed' => 'Dipinjam', 'overdue' => 'Terlambat', 'returned' => 'Dikembalikan'] as $key => $label)
@@ -28,19 +41,28 @@
             </td>
             <td>{{ $loan->due_date->format('d M Y') }}</td>
             <td>
-                @if ($loan->status === 'returned') <span class="chip ok">Dikembalikan</span>
-                @elseif ($loan->isOverdue()) <span class="chip err">Terlambat {{ $loan->daysLate() }} hari</span>
-                @else <span class="chip warn">Dipinjam</span> @endif
+                @if ($loan->status === 'returned')
+                    <span class="chip ok">Dikembalikan</span>
+                @elseif ($loan->isOverdue())
+                    <span class="chip err">Terlambat {{ $loan->daysLate() }} hari</span>
+                @elseif ($loan->daysUntilDue() === 0)
+                    <span class="chip warn">Jatuh tempo hari ini</span>
+                @elseif ($loan->daysUntilDue() === 1)
+                    <span class="chip warn">Jatuh tempo besok</span>
+                @else
+                    <span class="chip warn">Dipinjam</span>
+                @endif
             </td>
             <td>
                 @if ($loan->fine)
                     Rp {{ number_format($loan->fine->amount, 0, ',', '.') }}
-                    @if ($loan->fine->paid_at) <span class="chip ok">lunas</span>
+                    @if ($loan->fine->isPaid()) <span class="chip ok">lunas</span>
                     @else
                         <form method="POST" action="{{ route('fines.pay', $loan->fine) }}" style="margin-top:.25rem">@csrf <button class="btn sm ghost">Tandai lunas</button></form>
                     @endif
                 @elseif ($loan->isOverdue())
-                    <span class="muted">≈ Rp {{ number_format($loan->runningFine(), 0, ',', '.') }}</span>
+                    <b style="color:var(--err)">Rp {{ number_format($loan->runningFine(), 0, ',', '.') }}</b>
+                    <div class="small muted">{{ $loan->daysLate() }} hari × Rp {{ number_format($loan->fine_per_day, 0, ',', '.') }}</div>
                 @else - @endif
             </td>
             <td>

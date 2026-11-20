@@ -118,6 +118,7 @@
         <a class="nav {{ request()->routeIs('dashboard') ? 'on' : '' }}" href="{{ route('dashboard') }}">Ringkasan</a>
         <a class="nav {{ request()->routeIs('books.*') ? 'on' : '' }}" href="{{ route('books.index') }}">Koleksi buku</a>
         <a class="nav {{ request()->routeIs('loans.*') ? 'on' : '' }}" href="{{ route('loans.index') }}">Peminjaman</a>
+        <a class="nav {{ request()->routeIs('fines.*') ? 'on' : '' }}" href="{{ route('fines.index') }}">Denda</a>
         @if ($isAdmin)
             <a class="nav {{ request()->routeIs('members.*') ? 'on' : '' }}" href="{{ route('members.index') }}">Anggota</a>
         @endif
