@@ -45,6 +45,12 @@ class Loan extends Model
         return (int) max(0, $this->due_date->diffInDays(today(), false));
     }
 
+    /** Sisa hari sampai jatuh tempo (0 = hari ini, negatif = sudah lewat). */
+    public function daysUntilDue(): int
+    {
+        return (int) today()->diffInDays($this->due_date, false);
+    }
+
     /** Denda yang sedang berjalan (belum dikembalikan) berdasarkan tarif snapshot. */
     public function runningFine(): int
     {

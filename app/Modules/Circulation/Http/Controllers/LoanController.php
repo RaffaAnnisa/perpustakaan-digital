@@ -34,6 +34,10 @@ class LoanController extends Controller
             'returned' => Loan::where('status', 'returned')->count(),
         ];
 
+        // ringkasan keterlambatan untuk banner di atas tabel (tidak terpengaruh filter)
+        $overdueLoans = Loan::where('status', 'borrowed')->where('due_date', '<', $today)->get();
+        $overdueTotal = (int) $overdueLoans->sum(fn (Loan $l) => $l->runningFine());
+
         $query = Loan::with(['items', 'fine'])->latest('id');
         if ($filter === 'borrowed') {
             $query->where('status', 'borrowed');
@@ -48,7 +52,7 @@ class LoanController extends Controller
         $memberMap = $this->members->getMembersByIds($loans->pluck('member_id')->unique()->all());
         $bookMap = $this->books->getBooksByIds($loans->pluck('items')->flatten()->pluck('book_id')->unique()->all());
 
-        return view('circulation::loans.index', compact('loans', 'memberMap', 'bookMap', 'filter', 'counts'));
+        return view('circulation::loans.index', compact('loans', 'memberMap', 'bookMap', 'filter', 'counts', 'overdueTotal'));
     }
 
     public function create()
