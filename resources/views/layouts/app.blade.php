@@ -121,6 +121,7 @@
         <a class="nav {{ request()->routeIs('fines.*') ? 'on' : '' }}" href="{{ route('fines.index') }}">Denda</a>
         @if ($isAdmin)
             <a class="nav {{ request()->routeIs('members.*') ? 'on' : '' }}" href="{{ route('members.index') }}">Anggota</a>
+        <a href="{{ route('membership-types.index') }}">Jenis Anggota</a>
         @endif
         <div class="who">
             <b>{{ auth()->user()->name }}</b>
