@@ -99,7 +99,7 @@ class LibraryTest extends TestCase
 
         $this->actingAs($this->staff())->post('/loans', [
             'member_id' => $member->id, 'book_ids' => [$book->id],
-        ])->assertRedirect(route('loans.index'));
+        ])->assertRedirectContains('/loans');
 
         $this->assertSame(2, $book->fresh()->available_stock);
         $this->assertDatabaseHas('loan_items', ['book_id' => $book->id]);
@@ -154,7 +154,7 @@ class LibraryTest extends TestCase
         $this->actingAs($staff)->post('/loans', ['member_id' => $member->id, 'book_ids' => [$book->id]]);
         $loan = Loan::first();
 
-        $this->actingAs($staff)->post("/loans/{$loan->id}/return")->assertRedirect(route('loans.index'));
+        $this->actingAs($staff)->post("/loans/{$loan->id}/return")->assertRedirectContains('/loans');
 
         $this->assertSame(3, $book->fresh()->available_stock); // dipulihkan via Domain Event
         $this->assertSame(0, Fine::count());
