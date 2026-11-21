@@ -33,7 +33,8 @@ class FineController extends Controller
         return response()->streamDownload(function () use ($data) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // BOM agar Excel membaca UTF-8 dengan benar
-
+            fwrite($out, "sep=,\r\n");    // beri tahu Excel bahwa pemisah kolom adalah koma
+            
             fputcsv($out, ['ID Pinjaman', 'Anggota', 'Buku', 'Tanggal Denda', 'Hari Terlambat', 'Denda (Rp)', 'Status', 'Tanggal Lunas'], ',', '"', '');
 
             foreach ($data['fines'] as $fine) {
