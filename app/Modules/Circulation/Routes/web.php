@@ -15,5 +15,6 @@ Route::middleware(['web', 'auth:sanctum', 'role:admin,pustakawan'])->group(funct
     Route::post('loans/{loan}/return', [LoanController::class, 'returnLoan'])->name('loans.return');
 
     Route::get('fines', [FineController::class, 'index'])->name('fines.index');
+    Route::get('fines/export', [FineController::class, 'export'])->name('fines.export');
     Route::post('fines/{fine}/pay', [LoanController::class, 'payFine'])->name('fines.pay');
 });

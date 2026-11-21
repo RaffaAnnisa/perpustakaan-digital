@@ -13,9 +13,22 @@
     <div class="stat"><b>Rp {{ number_format($totals['paid'], 0, ',', '.') }}</b><span>Sudah lunas</span></div>
 </div>
 
+@php($dates = array_filter(['dari' => $from, 'sampai' => $to]))
+
+<form method="GET" action="{{ route('fines.index') }}" class="row" style="gap:.6rem;align-items:flex-end;margin-bottom:1rem">
+    @if ($filter !== 'all')<input type="hidden" name="status" value="{{ $filter }}">@endif
+    <label class="small muted">Dari tanggal<br><input type="date" name="dari" value="{{ $from }}"></label>
+    <label class="small muted">Sampai tanggal<br><input type="date" name="sampai" value="{{ $to }}"></label>
+    <button class="btn sm">Terapkan</button>
+    @if ($from || $to)
+        <a class="btn sm ghost" href="{{ route('fines.index', $filter === 'all' ? [] : ['status' => $filter]) }}">Reset tanggal</a>
+    @endif
+    <a class="btn sm ghost" href="{{ route('fines.export', ($filter === 'all' ? [] : ['status' => $filter]) + $dates) }}">Unduh CSV</a>
+</form>
+
 <div class="tabs">
     @foreach (['all' => 'Semua', 'unpaid' => 'Belum lunas', 'paid' => 'Lunas'] as $key => $label)
-        <a class="{{ $filter === $key ? 'on' : '' }}" href="{{ route('fines.index', $key === 'all' ? [] : ['status' => $key]) }}">{{ $label }}<i>{{ $counts[$key] }}</i></a>
+        <a class="{{ $filter === $key ? 'on' : '' }}" href="{{ route('fines.index', ($key === 'all' ? [] : ['status' => $key]) + $dates) }}">{{ $label }}<i>{{ $counts[$key] }}</i></a>
     @endforeach
 </div>
 
