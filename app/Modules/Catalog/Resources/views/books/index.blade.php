@@ -16,7 +16,7 @@
         @endforeach
     </select>
     <button class="btn ghost">Cari</button>
-    @if ($q !== '' || $categoryId) <a href="{{ route('books.index') }}" style="align-self:center">Reset</a> @endif
+    @if ($q !== '' || $categoryId) <a class="btn sm ghost" href="{{ route('books.index') }}" style="align-self:center">Reset filter</a> @endif
 </form>
 
 @if ($books->isEmpty())
@@ -28,18 +28,27 @@
         <article class="book">
             <div class="plank"><x-cover :title="$book->title" /></div>
             <div>
+                <div style="margin-bottom:.3rem"><span class="chip">{{ $book->category->name }}</span></div>
                 <h3>{{ $book->title }}</h3>
                 <div class="meta">{{ $book->authors->pluck('name')->join(', ') }}</div>
-                <div class="meta">{{ $book->category->name }} · {{ $book->isbn }}</div>
+                <div class="meta">ISBN: {{ $book->isbn }}</div>
             </div>
             <div>
                 <div class="bar {{ $book->available_stock === 0 ? 'zero' : ($ratio <= 34 ? 'low' : '') }}"><i style="width: {{ $ratio }}%"></i></div>
-                <div class="small muted" style="margin-top:.2rem">
-                    @if ($book->available_stock === 0) <span class="chip err">Habis dipinjam</span>
-                    @else {{ $book->available_stock }} dari {{ $book->stock }} tersedia @endif
+                <div class="small muted" style="margin-top:.3rem">
+                    @if ($book->available_stock === 0)
+                        <span class="chip err">Habis dipinjam</span>
+                    @elseif ($ratio <= 34)
+                        <span class="chip warn">Sisa {{ $book->available_stock }} dari {{ $book->stock }}</span>
+                    @else
+                        <span class="chip ok">{{ $book->available_stock }} dari {{ $book->stock }} tersedia</span>
+                    @endif
                 </div>
             </div>
             <div class="row small">
+                @if ($book->available_stock > 0)
+                    <a href="{{ route('loans.create') }}">Pinjam</a>
+                @endif
                 <a href="{{ route('books.edit', $book) }}">Ubah</a>
                 @if (auth()->user()->role === 'admin')
                     <form method="POST" action="{{ route('books.destroy', $book) }}" onsubmit="return confirm('Hapus buku ini?')">
