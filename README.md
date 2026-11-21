@@ -56,3 +56,24 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# Perpustakaan Digital
+
+Aplikasi manajemen perpustakaan berbasis Laravel (modular).
+
+## Instalasi
+1. `composer install`
+2. `cp .env.example .env` lalu atur koneksi database
+3. `php artisan key:generate`
+4. `php artisan migrate --seed`
+5. `php artisan serve`
+
+## Akun demo
+- Admin: (isi email dan password sesuai seeder)
+- Pustakawan: (isi email dan password sesuai seeder)
+
+## Modul
+Catalog, Circulation, Membership, dst. (sesuaikan dengan folder di `app/Modules`)
+
+## Menjalankan tes
+`php artisan test`
